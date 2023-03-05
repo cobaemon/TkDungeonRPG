@@ -11,7 +11,7 @@ from CustomCanvas import CustomCanvas
 class CaveRPG:
     def __init__(self):
         self.base_cell_size = 30    # マップのセルサイズ
-        self.map_size = (30, 50)    # マップのサイズ
+        self.map_size = (28, 50)    # マップのサイズ
         self.create_size = self.map_size[0] * self.map_size[1] // 10    # 一度に掘る穴の量
         self.loading_flg = False    # ロード中かどうかのフラグ
 
@@ -49,15 +49,7 @@ class CaveRPG:
         self.window.bind('<KeyPress>', self.keypress)
 
     # 画像を格納するための配列を生成する
-    def load_images(self):
-        # self.images = np.empty(
-        #     (self.cave_map.map_size[0], self.cave_map.map_size[1]),
-        #     dtype=object
-        # )
-        # for i in range(self.cave_map.map_size[0]):
-        #     for j in range(self.cave_map.map_size[1]):
-        #         self.images[i, j] = np.array([])
-        
+    def load_images(self):        
         # 各セルに画像を配置する
         for i in range(self.cave_map.map_size[0]):
             for j in range(self.cave_map.map_size[1]):
@@ -65,30 +57,37 @@ class CaveRPG:
                 if self.cave_map.map_list[i, j] == self.map_cache[i, j]:
                     continue
                 self.images[i, j] = np.array([])
+
+                match self.cave_map.map_list[i, j] % 10:
+                    # 床の画像を配置する
+                    case 0:
+                        if self.images[i, j].size > 0:
+                            self.images[i, j] = np.append(self.images[i, j], PhotoImageCaveFloor())
+                        else:
+                            self.images[i, j] = np.array([PhotoImageCaveFloor()])
+                    # 壁の画像を配置する
+                    case 1:
+                        if self.images[i, j].size > 0:
+                            self.images[i, j] = np.append(self.images[i, j], PhotoImageCaveWall())
+                        else:
+                            self.images[i, j] = np.array([PhotoImageCaveWall()])
+                    # 下り階段の画像を配置する
+                    case 2:
+                        if self.images[i, j].size > 0:
+                            self.images[i, j] = np.append(self.images[i, j], PhotoImageLowerStairs())
+                        else:
+                            self.images[i, j] = np.array([PhotoImageLowerStairs()])
+
+                match self.cave_map.map_list[i, j] // 10:
+                    # プレイヤーの画像を配置する
+                    case 1:
+                        if (i, j) == self.cave_map.player_current:
+                            self.images[i, j] = np.array([PhotoImageCaveFloor(), PhotoImagePlayer()])
                 
-                # 床の画像を配置する
-                if self.cave_map.map_list[i, j] % 10 == 0:
-                    if self.images[i, j].size > 0:
-                        self.images[i, j] = np.append(self.images[i, j], PhotoImageCaveFloor())
-                    else:
-                        self.images[i, j] = np.array([PhotoImageCaveFloor()])
-                # 壁の画像を配置する
-                elif self.cave_map.map_list[i, j] % 10 == 1:
-                    if self.images[i, j].size > 0:
-                        self.images[i, j] = np.append(self.images[i, j], PhotoImageCaveWall())
-                    else:
-                        self.images[i, j] = np.array([PhotoImageCaveWall()])
-                # 下り階段の画像を配置する
-                elif self.cave_map.map_list[i, j] % 10 == 2:
-                    if self.images[i, j].size > 0:
-                        self.images[i, j] = np.append(self.images[i, j], PhotoImageLowerStairs())
-                    else:
-                        self.images[i, j] = np.array([PhotoImageLowerStairs()])
-                
-                # プレイヤーの画像を配置する
-                if self.cave_map.map_list[i, j] // 10 == 1:
-                    if (i, j) == self.cave_map.player_current:
-                        self.images[i, j] = np.array([PhotoImageCaveFloor(), PhotoImagePlayer()])
+                match self.cave_map.map_list[i, j] // 100:
+                    # 宝箱の画像を配置する
+                    case 1:
+                        self.images[i, j] = np.array([PhotoImageCaveFloor(), PhotoImageStrongbox()])
 
     # ウィンドウの各セルにフレームとキャンバスを生成する
     def set_frame(self):

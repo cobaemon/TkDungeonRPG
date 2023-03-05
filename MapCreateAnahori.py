@@ -8,29 +8,39 @@ import numpy as np
 import random
 
 class Anahori:
-    def __init__(self, map_size=(100, 100), create_size=1000, create_depth=10):
+    def __init__(
+            self,
+            map_size=(100, 100),
+            create_size=1000,
+            create_depth=10,
+            strongbox_num=2
+        ):
         # マップ上の値を定数で定義
         self.floor = 0  # 床
         self.wall = 1   # 壁
         self.lower_stairs = 2   # 下り階段
         self.player_id = 10     # プレイヤーの位置を表す値
+        self.strongbox = 100  # 宝箱
 
         self.map_size = map_size          # マップの大きさ
         self.create_size = create_size    # 一度に掘る穴の量
         self.create_depth = create_depth  # 穴を掘る回数
 
+        self.strongbox_num = strongbox_num  # 宝箱の数
+        self.strongboxs = {}    # 宝箱の中身 {(index): item}
+
         self.map_init() # 初期化
     
     # ランダムな位置を返す関数
     def random_index(self, wall_flg=True):
-        # wall_flg=Trueの場合、壁以外のランダムな位置を返す
+        # wall_flg=Trueの場合、床のみのランダムな位置を返す
         # wall_flg=Falseの場合、壁を含めたランダムな位置を返す
         index = (
             np.random.randint(0, self.map_size[0]),
             np.random.randint(0, self.map_size[1])
         )
         if wall_flg:
-            # 壁以外の位置になるまで繰り返し
+            # 床の位置になるまで繰り返し
             while self.map_list[index] != self.floor:
                 index = (
                     np.random.randint(0, self.map_size[0]),
@@ -62,10 +72,6 @@ class Anahori:
                 if all((0 <= tmp[0] < self.map_size[0], 0 <= tmp[1] < self.map_size[1])):
                     self.map_list[tuple(origin + direction)] = self.floor
                     origin += direction
-                # else:
-                #     # マップの範囲外に向いているなら、ランダムな位置からスタート
-                #     origin = np.asarray(self.random_index())
-                #     continue
             self.start_point = self.random_index()
 
         # 最後の穴掘りのスタート位置にプレイヤーを配置
@@ -73,6 +79,11 @@ class Anahori:
         self.player_current = self.start_point
         # 下り階段をランダムな位置に配置
         self.map_list[self.random_index()] = self.lower_stairs
+        # 宝箱をランダムな位置に配置
+        for _ in range(self.strongbox_num):
+            index = self.random_index()
+            self.map_list[index] += self.strongbox
+            self.strongboxs[index] = None
     
     # マップを作成し、テキストファイルに保存する関数
     def map_save(self, create_flg=False):

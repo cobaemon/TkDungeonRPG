@@ -73,3 +73,17 @@ class PhotoImageUpperStairs:
             self.pil_image.resize(size=(int(width), int(height)))
         )
         return self.tk_image
+
+
+# 宝箱画像を読み込み、tkinter用の画像に変換する
+class PhotoImageStrongbox:
+    def __init__(self):
+        self.pil_image = Image.open(base_dir / 'strongbox.png')
+        self.tk_image = ImageTk.PhotoImage(self.pil_image)
+    
+    # 画像をリサイズして、tkinter用の画像に変換する
+    def resize(self, width, height):
+        self.tk_image = ImageTk.PhotoImage(
+            self.pil_image.resize(size=(int(width), int(height)))
+        )
+        return self.tk_image
