@@ -13,6 +13,9 @@ class CaveRPG:
         self.base_cell_size = 30    # マップのセルサイズ
         self.map_size = (28, 50)    # マップのサイズ
         self.create_size = self.map_size[0] * self.map_size[1] // 10    # 一度に掘る穴の量
+
+        self.grid_size = (self.map_size[0]+1, self.map_size[1])     # グリッドのサイズ
+        self.item_column_borderwidth = 4
         self.loading_flg = False    # ロード中かどうかのフラグ
 
         # マップを生成するオブジェクト
@@ -44,6 +47,7 @@ class CaveRPG:
         self.window = tk.Tk()
         self.window.title('Dungeon RPG')
         self.window.geometry(f'{self.width}x{self.height}')
+        self.window['bg'] = 'black'
 
         # キーイベントを設定する
         self.window.bind('<KeyPress>', self.keypress)
@@ -118,6 +122,33 @@ class CaveRPG:
                     if image is not None: # Noneでない場合のみ処理する
                         canvas.add_image(self.cell_w/2, self.cell_h/2, image)
                         canvas.pack()
+        i += 1
+        for j in range(self.cave_map.map_size[1] // 2 - 5, self.cave_map.map_size[1] // 2 + 5, 1):
+            # セルごとにフレームを生成する
+            frame = tk.Frame(
+                master=self.window,
+                relief=tk.RAISED,
+                borderwidth=0,
+                name=f'{i} {j}',
+                bg='gray'
+            )
+            frame.grid(row=i, column=j, sticky="nsew")
+            # セルごとにキャンバスを生成する
+            canvas = CustomCanvas(
+                master=frame,
+                width=self.cell_w-self.item_column_borderwidth*2,
+                height=self.cell_h-self.item_column_borderwidth*2,
+                relief=tk.RIDGE,
+                borderwidth=self.item_column_borderwidth,
+                bg='gray'
+            )
+            # キャンバスに画像を配置する
+            canvas.add_image(
+                self.cell_w/2,
+                self.cell_h/2,
+                PhotoImageStrongbox()
+            )
+            canvas.pack()
     
     # マップを生成する
     def generate_map(self):
