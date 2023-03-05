@@ -62,10 +62,10 @@ class Anahori:
                 if all((0 <= tmp[0] < self.map_size[0], 0 <= tmp[1] < self.map_size[1])):
                     self.map_list[tuple(origin + direction)] = self.floor
                     origin += direction
-                else:
-                    # マップの範囲外に向いているなら、ランダムな位置からスタート
-                    origin = np.asarray(self.random_index())
-                    continue
+                # else:
+                #     # マップの範囲外に向いているなら、ランダムな位置からスタート
+                #     origin = np.asarray(self.random_index())
+                #     continue
             self.start_point = self.random_index()
 
         # 最後の穴掘りのスタート位置にプレイヤーを配置

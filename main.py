@@ -21,11 +21,18 @@ class CaveRPG:
             create_size=self.create_size
         )
         self.cave_map.create()  # マップを生成する
+        self.map_cache = np.full(shape=self.map_size, fill_value=-1, dtype='int')    # マップのキャッシュ
         
         # 画像を格納するための変数
         # この変数に画像を格納しないとPythonのガベージコレクションで
         # 最後に読み込んだ画像以外削除されてしまう
-        self.images = None
+        self.images = self.images = np.empty(
+            (self.cave_map.map_size[0], self.cave_map.map_size[1]),
+            dtype=object
+        )
+        for i in range(self.cave_map.map_size[0]):
+            for j in range(self.cave_map.map_size[1]):
+                self.images[i, j] = np.array([])
 
         # ウィンドウのサイズを計算する
         self.width = self.base_cell_size * self.map_size[1]
@@ -43,17 +50,22 @@ class CaveRPG:
 
     # 画像を格納するための配列を生成する
     def load_images(self):
-        self.images = np.empty(
-            (self.cave_map.map_size[0], self.cave_map.map_size[1]),
-            dtype=object
-        )
-        for i in range(self.cave_map.map_size[0]):
-            for j in range(self.cave_map.map_size[1]):
-                self.images[i, j] = np.array([])
+        # self.images = np.empty(
+        #     (self.cave_map.map_size[0], self.cave_map.map_size[1]),
+        #     dtype=object
+        # )
+        # for i in range(self.cave_map.map_size[0]):
+        #     for j in range(self.cave_map.map_size[1]):
+        #         self.images[i, j] = np.array([])
         
         # 各セルに画像を配置する
         for i in range(self.cave_map.map_size[0]):
             for j in range(self.cave_map.map_size[1]):
+                # 前のマップと変更が無ければ処理をしない
+                if self.cave_map.map_list[i, j] == self.map_cache[i, j]:
+                    continue
+                self.images[i, j] = np.array([])
+                
                 # 床の画像を配置する
                 if self.cave_map.map_list[i, j] % 10 == 0:
                     if self.images[i, j].size > 0:
@@ -84,6 +96,10 @@ class CaveRPG:
             self.window.columnconfigure(i, weight=1, minsize=0)
             self.window.rowconfigure(i, weight=1, minsize=0)
             for j in range(self.cave_map.map_size[1]):
+                # 前のマップと変更が無ければ処理をしない
+                if self.cave_map.map_list[i, j] == self.map_cache[i, j]:
+                    continue
+                
                 # セルごとにフレームを生成する
                 frame = tk.Frame(
                     master=self.window,
@@ -107,6 +123,7 @@ class CaveRPG:
     # マップを生成する
     def generate_map(self):
         self.loading_flg = True
+        self.map_cache = self.cave_map.map_list
         self.cave_map.map_init()
         self.cave_map.create()
         self.refresh_screen()
