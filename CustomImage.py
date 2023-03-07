@@ -87,3 +87,45 @@ class PhotoImageStrongbox:
             self.pil_image.resize(size=(int(width), int(height)))
         )
         return self.tk_image
+
+
+# 回復薬画像を読み込み、tkinter用の画像に変換する
+class PhotoImageHealPotion10:
+    def __init__(self):
+        self.pil_image = Image.open(base_dir / 'heal_potion_10.png')
+        self.tk_image = ImageTk.PhotoImage(self.pil_image)
+    
+    # 画像をリサイズして、tkinter用の画像に変換する
+    def resize(self, width, height):
+        self.tk_image = ImageTk.PhotoImage(
+            self.pil_image.resize(size=(int(width), int(height)))
+        )
+        return self.tk_image
+
+
+# 回復薬画像を読み込み、tkinter用の画像に変換する
+class PhotoImageHealPotion50:
+    def __init__(self):
+        self.pil_image = Image.open(base_dir / 'heal_potion_50.png')
+        self.tk_image = ImageTk.PhotoImage(self.pil_image)
+    
+    # 画像をリサイズして、tkinter用の画像に変換する
+    def resize(self, width, height):
+        self.tk_image = ImageTk.PhotoImage(
+            self.pil_image.resize(size=(int(width), int(height)))
+        )
+        return self.tk_image
+
+
+# 回復薬画像を読み込み、tkinter用の画像に変換する
+class PhotoImageHealPotion100:
+    def __init__(self):
+        self.pil_image = Image.open(base_dir / 'heal_potion_100.png')
+        self.tk_image = ImageTk.PhotoImage(self.pil_image)
+    
+    # 画像をリサイズして、tkinter用の画像に変換する
+    def resize(self, width, height):
+        self.tk_image = ImageTk.PhotoImage(
+            self.pil_image.resize(size=(int(width), int(height)))
+        )
+        return self.tk_image
