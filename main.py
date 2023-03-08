@@ -27,6 +27,9 @@ class CaveRPG:
             self.map_size[0],
             self.map_size[1] // 2 - 5
         )
+
+        self.hp_bar_width = 4   # HPバーの幅
+
         self.loading_flg = False    # ロード中かどうかのフラグ
 
         # ウィンドウを生成する
@@ -38,7 +41,8 @@ class CaveRPG:
         # キーイベントを設定する
         self.window.bind('<KeyPress>', self.keypress)
 
-        self.entity_player = EntityPlayer(entity_name='player')
+        self.entity_player = EntityPlayer(name='player')
+        self.entity_player.hp = 30
 
         self.create_size = self.map_size[0] * self.map_size[1] // 10    # 一度に掘る穴の量
         # マップを生成するオブジェクト
@@ -182,6 +186,36 @@ class CaveRPG:
                 item
             )
 
+    # HPバーの配置
+    def set_hp_bar(self):
+        x = self.items_column_start_index[0]
+        y = self.items_column_start_index[1]-self.hp_bar_width-1
+        hp_ratio = \
+            self.entity_player.hp / self.entity_player.max_hp
+        hp_bar_width = \
+            self.cell_w*self.hp_bar_width-self.item_column_borderwidth*2
+        # フレームを生成
+        frame = tk.Frame(
+            master=self.window,
+            name=f'{x} {y}',
+        )
+        frame.grid(
+            row=self.items_column_start_index[0],
+            column=self.items_column_start_index[1]-self.hp_bar_width-1,
+            columnspan=self.hp_bar_width,
+            sticky="nsew"
+        )
+        # セルごとにキャンバスを生成
+        canvas = CustomCanvas(
+            master=frame,
+            width=hp_bar_width*hp_ratio,
+            height=self.cell_h-self.item_column_borderwidth*2,
+            relief=tk.RAISED,
+            borderwidth=self.item_column_borderwidth,
+            bg='green'
+        )
+        canvas.pack(side='left')
+
     # ウィンドウの各セルにフレームとキャンバスを生成する
     def set_screen(self):
         # マップの配置
@@ -190,6 +224,7 @@ class CaveRPG:
         if self.init_flg:
             self.set_item_column()
             self.init_flg = False
+            self.set_hp_bar()
     
     # ロード画面を表示する
     def show_loading_screen(self):
@@ -310,6 +345,9 @@ class CaveRPG:
                     self.items_column_start_index[1]+index
                 )
             )
+            if self.entity_player.hp_cache != self.entity_player.hp:
+                self.entity_player.hp_cache = self.entity_player.hp
+                self.set_hp_bar()
 
     # プレイヤーを移動させる
     def move_player(self, dx, dy):

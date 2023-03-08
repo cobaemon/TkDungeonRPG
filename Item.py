@@ -18,10 +18,10 @@ class HealPotion10(Item):
         self.heal_point = 10
     
     def use(self, player):
-        if player.entity_hp + self.heal_point <= player.entity_max_hp:
-            player.entity_hp += self.heal_point
+        if player.hp + self.heal_point <= player.max_hp:
+            player.hp += self.heal_point
         else:
-            player.entity_hp = player.entity_max_hp
+            player.hp = player.max_hp
         return player
 
 
