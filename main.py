@@ -42,7 +42,6 @@ class CaveRPG:
         self.window.bind('<KeyPress>', self.keypress)
 
         self.entity_player = EntityPlayer(name='player')
-        self.entity_player.hp = 30
 
         self.create_size = self.map_size[0] * self.map_size[1] // 10    # 一度に掘る穴の量
         # マップを生成するオブジェクト
@@ -309,6 +308,7 @@ class CaveRPG:
             if item is None:
                 self.entity_player.items[i] = \
                     self.cave_map.strongboxs[self.cave_map.player_current]
+                del self.cave_map.strongboxs[self.cave_map.player_current]
                 self.cave_map.map_list[self.cave_map.player_current] -= \
                     self.cave_map.strongbox
                 self.set_item_column_cell(
@@ -318,6 +318,7 @@ class CaveRPG:
                     ),
                     self.entity_player.items[i].image
                 )
+                self.set_map_cell(self.cave_map.player_current)
                 return
 
     # アイテム使用
